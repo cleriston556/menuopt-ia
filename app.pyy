@@ -1,0 +1,32 @@
+import streamlit as st
+# Importa o componente do Stripe
+from streamlit_stripe import stripe_button
+
+st.set_page_config(page_title="MenuOpt IA", layout="wide")
+
+st.title("📊 MenuOpt IA: Otimizador de Lucros para Delivery")
+st.markdown("---")
+
+# --- NOVIDADE: Área de Assinatura Premium ---
+st.header("Torne-se Premium para análise ilimitada!")
+
+# AQUI VOCÊ COLOCA SUAS CHAVES REAIS
+CHAVE_PUBLICA = "SUA_CHAVE_PUBLICA_STRIPE" 
+PRICE_ID_PRO = "SEU_PRICE_ID_STRIPE" # Ex: price_1OiZpQKHRp1...
+
+# Botão do Stripe que direciona para o pagamento
+checkout = stripe_button(
+    price_id=PRICE_ID_PRO,
+    client_reference_id="ID_DO_CLIENTE_AQUI", # Você pode passar o email do usuário aqui
+    stripe_key=CHAVE_PUBLICA,
+    label="Assinar MenuOpt Pro (R$ 49/mês)",
+)
+
+if checkout:
+    st.success("🎉 Pagamento realizado com sucesso! Seu acesso Pro foi liberado.")
+    # Aqui você deve integrar com o Supabase para marcar o usuário como 'pago'
+
+st.markdown("---")
+
+# O resto do seu aplicativo antigo continua aqui embaixo...
+# ... (O código dos inputs de item, custo, venda, etc.) ...
