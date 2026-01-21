@@ -1,0 +1,170 @@
+import streamlit as st
+import pandas as pd
+from streamlit_stripe import stripe_button
+from supabase import create_client, Client
+import os
+
+st.set_page_config(page_title="MenuOpt IA", layout="wide")
+
+st.title("📊 MenuOpt IA: Otimizador de Lucros para Delivery")
+
+# --- 1. CONFIGURAÇÃO SUPABASE ---
+# Pega as chaves das variáveis secretas configuradas no Streamlit Cloud
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+
+if SUPABASE_URL and SUPABASE_KEY:
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+else:
+    st.error("Chaves do Supabase não configuradas nas variáveis secretas do Streamlit.")
+
+# --- 2. CONFIGURAÇÃO STRIPE ---
+CHAVE_PUBLICA = "import streamlit as st
+import pandas as pd
+from streamlit_stripe import stripe_button
+from supabase import create_client, Client
+import os
+
+st.set_page_config(page_title="MenuOpt IA", layout="wide")
+
+st.title("📊 MenuOpt IA: Otimizador de Lucros para Delivery")
+
+# --- 1. CONFIGURAÇÃO SUPABASE ---
+# Pega as chaves das variáveis secretas configuradas no Streamlit Cloud
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+
+if SUPABASE_URL and SUPABASE_KEY:
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+else:
+    st.error("Chaves do Supabase não configuradas nas variáveis secretas do Streamlit.")
+
+# --- 2. CONFIGURAÇÃO STRIPE ---
+CHAVE_PUBLICA = "price_1Ss8boDnrs6odh41hnUr74lD 
+PRICE_ID_PRO =price_1Ss8boDnrs6odh41hnUr74lD"
+
+# --- 3. FUNCIONALIDADES DO APP ---
+
+# Função para salvar novo restaurante no DB
+def registrar_restaurante(nome, email):
+    try:
+        data, count = supabase.table('restaurantes').insert({"nome_restaurante": nome, "email": email}).execute()
+        st.success(f"Restaurante {nome} registrado com sucesso no banco de dados!")
+        return data
+    except Exception as e:
+        st.error(f"Erro ao registrar: {e}")
+        return None
+
+# Formulário de Cadastro/Login Simples
+with st.expander("🔑 Acesso do Restaurante"):
+    nome = st.text_input("Nome do Restaurante (para registro)")
+    email = st.text_input("E-mail de contato")
+    if st.button("Registrar"):
+        if nome and email:
+            registrar_restaurante(nome, email)
+
+st.markdown("---")
+
+# Área de Assinatura Premium (Visível para todos, mas checkout só funciona com chaves reais)
+st.header("Torne-se Premium para análise ilimitada!")
+checkout = stripe_button(
+    price_id=PRICE_ID_PRO,
+    client_reference_id=email, # Passa o email do usuário para o Stripe
+    stripe_key=CHAVE_PUBLICA,
+    label="Assinar MenuOpt Pro (R$ 49/mês)",
+)
+
+if checkout:
+    st.success("🎉 Pagamento realizado com sucesso! Verifique seu e-mail para os próximos passos.")
+    # No futuro, você usará os Webhooks do Stripe para uma confirmação automática
+
+st.markdown("---")
+
+# ... (O resto do seu aplicativo antigo continua aqui embaixo, a lógica de cálculo) ...
+col1, col2 = st.columns(2)
+
+with col1:
+    st.header("🛒 Adicionar Item")
+    item = st.text_input("Nome do Prato (Ex: X-Salada)")
+    custo = st.number_input("Custo de Produção (R$)", min_value=0.0)
+    venda = st.number_input("Preço de Venda Atual (R$)", min_value=0.0)
+    btn_analisar = st.button("Analisar Lucratividade")
+
+with col2:
+    st.header("💡 Sugestão da IA")
+    if btn_analisar:
+        lucro_bruto = venda - custo
+        margem = (lucro_bruto / venda) * 100 if venda > 0 else 0
+        
+        st.metric("Margem Atual", f"{margem:.1f}%")
+        
+        if margem < 30:
+            st.warning("⚠️ Atenção: Sua margem está abaixo do mercado (30%).")
+            sugestao = custo / (1 - 0.35)
+            st.success(f"📈 Sugestão: Reajuste para R$ {sugestao:.2f} para ter 35% de margem.")
+        else:
+            st.info("✅ Sua margem está saudável. Foque em combos para aumentar o ticket médio!")
+" 
+PRICE_ID_PRO = "SEU_PRICE_ID_STRIPE"
+
+# --- 3. FUNCIONALIDADES DO APP ---
+
+# Função para salvar novo restaurante no DB
+def registrar_restaurante(nome, email):
+    try:
+        data, count = supabase.table('restaurantes').insert({"nome_restaurante": nome, "email": email}).execute()
+        st.success(f"Restaurante {nome} registrado com sucesso no banco de dados!")
+        return data
+    except Exception as e:
+        st.error(f"Erro ao registrar: {e}")
+        return None
+
+# Formulário de Cadastro/Login Simples
+with st.expander("🔑 Acesso do Restaurante"):
+    nome = st.text_input("Nome do Restaurante (para registro)")
+    email = st.text_input("E-mail de contato")
+    if st.button("Registrar"):
+        if nome and email:
+            registrar_restaurante(nome, email)
+
+st.markdown("---")
+
+# Área de Assinatura Premium (Visível para todos, mas checkout só funciona com chaves reais)
+st.header("Torne-se Premium para análise ilimitada!")
+checkout = stripe_button(
+    price_id=PRICE_ID_PRO,
+    client_reference_id=email, # Passa o email do usuário para o Stripe
+    stripe_key=CHAVE_PUBLICA,
+    label="Assinar MenuOpt Pro (R$ 49/mês)",
+)
+
+if checkout:
+    st.success("🎉 Pagamento realizado com sucesso! Verifique seu e-mail para os próximos passos.")
+    # No futuro, você usará os Webhooks do Stripe para uma confirmação automática
+
+st.markdown("---")
+
+# ... (O resto do seu aplicativo antigo continua aqui embaixo, a lógica de cálculo) ...
+col1, col2 = st.columns(2)
+
+with col1:
+    st.header("🛒 Adicionar Item")
+    item = st.text_input("Nome do Prato (Ex: X-Salada)")
+    custo = st.number_input("Custo de Produção (R$)", min_value=0.0)
+    venda = st.number_input("Preço de Venda Atual (R$)", min_value=0.0)
+    btn_analisar = st.button("Analisar Lucratividade")
+
+with col2:
+    st.header("💡 Sugestão da IA")
+    if btn_analisar:
+        lucro_bruto = venda - custo
+        margem = (lucro_bruto / venda) * 100 if venda > 0 else 0
+        
+        st.metric("Margem Atual", f"{margem:.1f}%")
+        
+        if margem < 30:
+            st.warning("⚠️ Atenção: Sua margem está abaixo do mercado (30%).")
+            sugestao = custo / (1 - 0.35)
+            st.success(f"📈 Sugestão: Reajuste para R$ {sugestao:.2f} para ter 35% de margem.")
+        else:
+            st.info("✅ Sua margem está saudável. Foque em combos para aumentar o ticket médio!")
